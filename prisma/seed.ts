@@ -6,6 +6,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // Clear existing data
+  await prisma.user.deleteMany({});
+  await prisma.invoice.deleteMany({});
+
   // Users data
   const users = [
     { email: 'user1@example.com', password: '}KOGpN]w81P6', username: 'john' },
