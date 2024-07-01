@@ -35,7 +35,7 @@ This README provides detailed instructions on how to set up, run, and use the ba
 ## Database Setup
 
 1. **Install PostgreSQL:**
-   Ensure you have PostgreSQL installed on your machine. You can download it from the [official website](https://www.postgresql.org/download/).
+   Ensure  PostgreSQL installed on machine.
 
 2. **Create a new PostgreSQL database:**
    ```sh
@@ -51,34 +51,7 @@ This README provides detailed instructions on how to set up, run, and use the ba
    ```
 
 2. **Update Prisma schema:**
-   Update the `prisma/schema.prisma` file with your database schema. For example:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-
-   generator client {
-     provider = "prisma-client-js"
-   }
-
-   model User {
-     id       Int      @id @default(autoincrement())
-     email    String   @unique
-     password String
-     name     String?
-   }
-
-   model Invoice {
-     id          Int      @id @default(autoincrement())
-     vendor_name String
-     amount      Float
-     due_date    DateTime
-     description String?
-     user_id     Int
-     paid        Boolean
-     user        User     @relation(fields: [user_id], references: [id])
-   }
+   Update the `prisma/schema.prisma` file with database schema. 
    ```
 
 3. **Generate Prisma client:**
@@ -116,50 +89,7 @@ This README provides detailed instructions on how to set up, run, and use the ba
 
 1. **Create a seed script:**
    Create a `prisma/seed.ts` file with the following content:
-   ```typescript
-   import { PrismaClient } from '@prisma/client';
-   const prisma = new PrismaClient();
-
-   async function main() {
-     const user = await prisma.user.create({
-       data: {
-         email: 'user@example.com',
-         password: 'password',
-         name: 'John Doe',
-       },
-     });
-
-     await prisma.invoice.createMany({
-       data: [
-         {
-           vendor_name: 'Vendor 1',
-           amount: 100,
-           due_date: new Date(),
-           description: 'Invoice 1',
-           user_id: user.id,
-           paid: false,
-         },
-         {
-           vendor_name: 'Vendor 2',
-           amount: 200,
-           due_date: new Date(),
-           description: 'Invoice 2',
-           user_id: user.id,
-           paid: true,
-         },
-       ],
-     });
-   }
-
-   main()
-     .catch((e) => {
-       console.error(e);
-       process.exit(1);
-     })
-     .finally(async () => {
-       await prisma.$disconnect();
-     });
-   ```
+  
 
 2. **Run the seed script:**
    ```sh
