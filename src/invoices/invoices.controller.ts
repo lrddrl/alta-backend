@@ -1,7 +1,6 @@
 import { Controller, Get, Param, UseGuards, Query, HttpException, HttpStatus,Req } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { InvoicesService } from './invoices.service';
-import { ExtendedRequest } from '../common/types/extended-request';
 
 @Controller('invoices')
 export class InvoicesController {
@@ -9,13 +8,17 @@ export class InvoicesController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllInvoices(@Req() req: ExtendedRequest) {
+  async getAllInvoices(@Query('page') page?: string, @Query('limit') limit?: string) {
     try {
-      if (!req.pagination) {
-        throw new HttpException('Pagination parameters are required', HttpStatus.BAD_REQUEST);
+      if (page && limit) {
+        const pagination = { page: parseInt(page, 10), limit: parseInt(limit, 10) };
+        if (isNaN(pagination.page) || isNaN(pagination.limit)) {
+          throw new HttpException('Invalid pagination parameters', HttpStatus.BAD_REQUEST);
+        }
+        return await this.invoicesService.getPaginatedInvoices(pagination);
+      } else {
+        return await this.invoicesService.getAllInvoices();
       }
-      const pagination = req.pagination;
-      return await this.invoicesService.getAllInvoices(pagination);
     } catch (error) {
       console.error('Error in controller getAllInvoices:', error);
       throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);

@@ -98,6 +98,12 @@ This README provides detailed instructions on how to set up, run, and use the ba
    npm run start:dev
    ```
 
+   or
+
+   ```sh
+   npm start
+   ```
+
 ## API Endpoints
 
 - **POST /auth/login:** Authenticate a user and return an authentication token.
