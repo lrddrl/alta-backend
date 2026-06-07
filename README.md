@@ -1,105 +1,49 @@
+# alta-backend
 
-# Backend API Development
+NestJS + Prisma/PostgreSQL REST API for tracking invoices. JWT-protected routes for listing, paginating, and aggregating invoices by due date.
 
-This README provides detailed instructions on how to set up, run, and use the backend API developed using Node.js with Nest.js, Prisma, and PostgreSQL.
+## Tech Stack
 
-## Table of Contents
+- **Framework**: NestJS 10
+- **ORM**: Prisma 5
+- **DB**: PostgreSQL
+- **Auth**: `@nestjs/jwt` + `passport-jwt`, password hashing with `bcryptjs`
+- **Validation**: Zod + `class-validator`
+- **Container**: Dockerfile + docker-compose
+- **Tests**: Jest (unit + supertest e2e)
+- **Language**: TypeScript 5
 
-1. [Project Setup](#project-setup)
-2. [Database Setup](#database-setup)
-3. [Prisma Setup](#prisma-setup)
-4. [Running the Application](#running-the-application)
-5. [API Endpoints](#api-endpoints)
-6. [Seeding Data](#seeding-data)
-7. [Authentication](#authentication)
+## Architecture
 
-## Project Setup
+Four feature modules: `PrismaModule` (DB client), `AuthModule` (JWT issue + guard), `InvoicesModule` (queries), and `MiddlewareModule`. The Prisma schema defines two models — `User` (with `invoices` relation) and `Invoice` (`vendor_name`, `amount`, `due_date`, `description`, `user_id`, `paid`).
 
-1. **Clone the repository:**
-   ```sh
-   git clone <repository-url>
-   cd <repository-folder>
-   ```
+## Endpoints (all behind `JwtAuthGuard`)
 
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET    | `/invoices`                 | List all invoices (optional `?page=&limit=` for pagination) |
+| GET    | `/invoices/total?dueDate=`   | Total `amount` of invoices due on the given date |
+| GET    | `/invoices/:id`             | Single invoice by id |
 
-3. **Create an `.env` file:**
-   Create a `.env` file in the root directory and add the following environment variables:
-   ```sh
-   DATABASE_URL="postgresql://username:password@localhost:5432/database_name?schema=public"
-   ```
+## Setup
 
-## Database Setup
+```bash
+git clone https://github.com/lrddrl/alta-backend.git
+cd alta-backend
+npm install
 
-1. **Install PostgreSQL:**
-   Ensure  PostgreSQL installed on machine.
+# 1. Create a .env file in the project root with:
+#    DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/database_name?schema=public"
+#    JWT_SECRET="your-jwt-secret"
 
-2. **Create a new PostgreSQL database:**
-   ```sh
-   psql -U postgres
-   CREATE DATABASE database_name;
-   ```
+# 2. Apply the schema
+npx prisma migrate dev --name init
 
-## Prisma Setup
+# 3. (Optional) seed using prisma/seed.ts
+npx ts-node prisma/seed.ts
 
-1. **Initialize Prisma:**
-   ```sh
-   npx prisma init
-   ```
+# 4. Run
+npm run start:dev
+```
 
-2. **Update Prisma schema:**
-   Update the `prisma/schema.prisma` file with database schema. 
-   ```
-
-3. **Generate Prisma client:**
-   ```sh
-   npx prisma generate
-   ```
-
-## Running the Application
-
-1. **Run database migrations:**
-   ```sh
-   npx prisma migrate dev --name init
-   ```
-
-2. **Start the development server:**
-   ```sh
-   npm run start:dev
-   ```
-
-   or
-
-   ```sh
-   npm start
-   ```
-
-## API Endpoints
-
-- **POST /auth/login:** Authenticate a user and return an authentication token.
-- **GET /invoices:** Retrieve all invoices.
-- **GET /invoices?page=1&limit=10:** Retrieve for each page.
-- **GET /invoices/:id:** Retrieve details of a specific invoice.
-- **GET /invoices/total:** Retrieve a data aggregation of the total amount due by due_date.
-
-## Seeding Data
-
-1. **Create a seed script:**
-   Create a `prisma/seed.ts` file with the following content:
-  
-
-2. **Run the seed script:**
-   ```sh
-   npx ts-node prisma/seed.ts
-   ```
-
-## Authentication
-
-- **Login credentials:** Use the username and password to log in.
-
----
-
-For any questions or issues, please contact us at ruodongsde@gmail.com.
+Server starts on `http://localhost:3000`. To run the full stack with Postgres in Docker, use `docker-compose up`.
