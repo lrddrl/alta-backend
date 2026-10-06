@@ -1,5 +1,7 @@
 # alta-backend
 
+[![CI](https://github.com/lrddrl/alta-backend/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/lrddrl/alta-backend/actions/workflows/ci.yml)
+
 NestJS + Prisma/PostgreSQL REST API for tracking invoices. JWT-protected routes for listing, paginating, and aggregating invoices by due date.
 
 ## Tech Stack
